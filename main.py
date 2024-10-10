@@ -17,6 +17,9 @@ try:
     with conn.cursor() as cur:
         execute_sql_script(script_file, cur)
         create_suppliers_table(cur)
+        suppliers = get_suppliers_data('suppliers.json')
+        insert_suppliers_data(suppliers, cur)
+
 
 except (Exception, psycopg2.DatabaseError) as e:
     print(f"Ошибка: {e}")

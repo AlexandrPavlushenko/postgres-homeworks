@@ -1,3 +1,5 @@
+import json
+
 import psycopg2
 
 
@@ -32,11 +34,25 @@ def create_suppliers_table(cur):
 
 def get_suppliers_data(json_file):
     """Извлекает данные о поставщиках из JSON-файла и возвращает список словарей с соответствующей информацией."""
-    pass
+    with open(json_file) as f:
+        return json.load(f)
 
-def insert_suppliers_data(cur, suppliers):
+def insert_suppliers_data(suppliers, cur):
     """Добавляет данные из suppliers в таблицу suppliers."""
-    pass
+    insert_suppliers = [
+        (
+            item['company_name'],
+            item['contact'],
+            item['address'],
+            item['phone'],
+            item['fax'],
+            item['homepage'],
+            json.dumps(item['products']),
+        ) for item in suppliers
+    ]
+    query = "INSERT INTO suppliers VALUES (%s, %s, %s, %s, %s, %s, %s)"
+    cur.execute("TRUNCATE TABLE suppliers")
+    cur.executemany(query, insert_suppliers)
 
 def add_foreign_keys(cur, json_file):
     """Добавляет foreign key со ссылкой на supplier_id в таблицу products."""
